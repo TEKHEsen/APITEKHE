@@ -6,9 +6,12 @@ from app.models.geography import Geography, GeoLevel
 from app.core.constants import DEFAULT_CONFIGS
 from app.core.security import get_password_hash
 from app.models.user import User
+from app.db.base_class import Base  
+from app.db.session import engine
 
 def init_db(db: Session) -> None:
     # 1. Zone nationale
+    Base.metadata.create_all(bind=engine)
     national_zone = db.query(Geography).filter(Geography.level == GeoLevel.NATIONAL).first()
     if not national_zone:
         national_zone = Geography(

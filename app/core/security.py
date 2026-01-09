@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 from app.core.config import settings
 from typing import Any, Union, Optional
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__ident="2b")
 
 def create_access_token(
     subject: Union[str, Any], expires_delta: timedelta = None

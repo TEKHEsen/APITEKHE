@@ -74,11 +74,10 @@ from app.api import deps
 from app.db.init_db import init_db
 
 router = APIRouter()
-
 @router.get("/setup-database-initial-tekhe")
 def setup_db(db: Session = Depends(deps.get_db)):
     try:
         init_db(db)
-        return {"status": "success", "message": "Base de données initialisée avec succès"}
+        return {"status": "success", "message": "Tables creees et Admin initialise"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

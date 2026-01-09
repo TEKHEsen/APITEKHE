@@ -37,15 +37,12 @@ class Settings(BaseSettings):
         if isinstance(v, str) and v:
             return v
         
-        # 1. Vérifier si DATABASE_URL est fournie (priorité production)
         db_url = info.data.get("DATABASE_URL")
         if db_url:
-            # Correction pour SQLAlchemy qui exige 'postgresql://' et non 'postgres://'
             if db_url.startswith("postgres://"):
                 db_url = db_url.replace("postgres://", "postgresql://", 1)
             return db_url
             
-        # 2. Sinon construire à partir des variables (local)
         user = info.data.get("POSTGRES_USER")
         password = info.data.get("POSTGRES_PASSWORD")
         server = info.data.get("POSTGRES_SERVER")

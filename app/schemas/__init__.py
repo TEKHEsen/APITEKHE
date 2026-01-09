@@ -4,3 +4,9 @@ from .risk import RiskInputSchema, RiskAnalysisOut, RiskStats
 from .consultation import Consultation, ConsultationCreate
 from .user import User, UserCreate
 from .geography import Geography, GeographyCreate, GeographyWithChildren
+from .user import User, UserCreate, UserUpdate, UserOut
+from .patient import Patient, PatientCreate, PatientUpdate
+from .token import Token, TokenPayload
+from .user import User, UserCreate, UserUpdate, UserOut
+from .patient import Patient, PatientCreate, PatientUpdate
+from .token import Token, TokenPayload

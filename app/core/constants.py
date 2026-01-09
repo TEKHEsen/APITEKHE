@@ -5,15 +5,14 @@ class RiskLevel(str, Enum):
     ORANGE = "ORANGE"
     RED = "ROUGE"
 
-# --- RÔLES UTILISATEURS (Fixes) ---
+
 ROLES = {
-    "NATIONAL": "Gestionnaire National (Contrôle total)",
-    "REGIONAL": "Direction Régionale de la Santé",
+    "NATIONAL": "Gestionnaire National (Controle total)",
+    "REGIONAL": "Direction Regionale de la Sante",
     "DISTRICT": "District Sanitaire",
-    "POSTE": "Prestataire de Terrain (Sage-femme, ICP, Badiénou Gox)"
+    "POSTE": "Prestataire de Terrain (Sage-femme, ICP, Badienou Gox)"
 }
 
-# --- VALEURS PAR DÉFAUT (Initialisation) ---
 DEFAULT_CONFIGS = {
     "AGE_MIN_CRITIQUE": "15",
     "AGE_MAX_CRITIQUE": "35",

@@ -15,30 +15,45 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 jours
     
-    # Configuration du premier Administrateur (Requis pour init_db)
+    # Configuration du premier Administrateur
     FIRST_SUPERUSER: str = "admin@tekhe.sn"
     FIRST_SUPERUSER_PASSWORD: str = "TekheSenegal2026!"
     
-    # Base de données
+    # --- BASE DE DONNÉES ---
+    # En production (ex: Render/Railway), DATABASE_URL est souvent fournie directement.
+    # En local, on utilise les variables séparées.
+    DATABASE_URL: Optional[str] = None 
+    
     POSTGRES_SERVER: str = "localhost"
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "aipenpass123"
     POSTGRES_DB: str = "tekhe_db"
+    
     SQLALCHEMY_DATABASE_URI: Optional[str] = None
 
     @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
     @classmethod
     def assemble_db_connection(cls, v: Optional[str], info: Any) -> Any:
-        if isinstance(v, str):
+        if isinstance(v, str) and v:
             return v
-        # Récupération des valeurs depuis l'objet de données Pydantic
+        
+        # 1. Vérifier si DATABASE_URL est fournie (priorité production)
+        db_url = info.data.get("DATABASE_URL")
+        if db_url:
+            # Correction pour SQLAlchemy qui exige 'postgresql://' et non 'postgres://'
+            if db_url.startswith("postgres://"):
+                db_url = db_url.replace("postgres://", "postgresql://", 1)
+            return db_url
+            
+        # 2. Sinon construire à partir des variables (local)
         user = info.data.get("POSTGRES_USER")
         password = info.data.get("POSTGRES_PASSWORD")
         server = info.data.get("POSTGRES_SERVER")
         db = info.data.get("POSTGRES_DB")
+        
         return f"postgresql://{user}:{password}@{server}/{db}"
 
-    # CORS (Cross-Origin Resource Sharing)
+    # --- CORS ---
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
@@ -48,12 +63,12 @@ class Settings(BaseSettings):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, (list, str)):
             return v
-        raise ValueError(v)
+        return []
 
     model_config = {
         "case_sensitive": True,
         "env_file": ".env",
-        "extra": "ignore"  # Permet d'ignorer les variables du .env non définies ici
+        "extra": "ignore" 
     }
 
 settings = Settings()

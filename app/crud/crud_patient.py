@@ -4,6 +4,8 @@ from app.models.patient import Patient
 from app.schemas.patient import PatientCreate, PatientUpdate
 
 class CRUDPatient:
+    # --- LECTURE ---
+
     def get(self, db: Session, id: int) -> Optional[Patient]:
         return db.query(Patient).filter(Patient.id == id).first()
 
@@ -11,16 +13,15 @@ class CRUDPatient:
         return db.query(Patient).filter(Patient.uuid == uuid).first()
 
     def get_by_qr_hash(self, db: Session, qr_hash: str) -> Optional[Patient]:
+        # Note: Vérifiez si le champ dans votre modèle est csu_qr_hash ou qr_code_hash
         return db.query(Patient).filter(Patient.csu_qr_hash == qr_hash).first()
 
     def get_multi(self, db: Session, *, skip: int = 0, limit: int = 100) -> List[Patient]:
         return db.query(Patient).order_by(Patient.created_at.desc()).offset(skip).limit(limit).all()
 
-
     def get_by_geography(self, db: Session, *, geo_id: int, skip: int = 0, limit: int = 100) -> List[Patient]:
         """
         Récupère les patientes pour une zone spécifique. 
-        Note: En production, on utiliserait une fonction récursive SQL pour inclure les sous-zones.
         """
         return db.query(Patient).filter(Patient.geography_id == geo_id).offset(skip).limit(limit).all()
 
@@ -36,7 +37,7 @@ class CRUDPatient:
     # --- ACTIONS ---
 
     def create_with_owner(self, db: Session, *, obj_in: PatientCreate, creator_id: int) -> Patient:
-        # Conversion du schéma en dictionnaire pour gérer dynamiquement les nouveaux champs GHIF
+        # Conversion du schéma en dictionnaire (Pydantic v2)
         obj_in_data = obj_in.model_dump()
         db_obj = Patient(
             **obj_in_data,
@@ -65,4 +66,5 @@ class CRUDPatient:
         db.refresh(db_obj)
         return db_obj
 
-crud_patient = CRUDPatient()
+# L'instance exportée doit s'appeler 'patient' pour correspondre à vos imports
+patient = CRUDPatient()

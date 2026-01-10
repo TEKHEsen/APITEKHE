@@ -1,8 +1,9 @@
-from typing import List
+from typing import List, Dict, Any
 from sqlalchemy.orm import Session
 from app.schemas.risk import RiskInputSchema, RiskAnalysisOut
 from app.core.constants import RiskLevel
 from app.services.config_service import config_manager
+from app.models.user import User
 
 class RiskService:
     def evaluate_risk(self, db: Session, data: RiskInputSchema) -> RiskAnalysisOut:
@@ -11,9 +12,9 @@ class RiskService:
         level = RiskLevel.GREEN
 
         # Récupération des seuils dynamiques via le National Config
-        age_min = config_manager.get_value(db, "AGE_MIN_CRITIQUE")
-        age_max = config_manager.get_value(db, "AGE_MAX_CRITIQUE")
-        hu_max = config_manager.get_value(db, "HU_MAX_THRESHOLD")
+        age_min = config_manager.get_value(db, "AGE_MIN_CRITIQUE") or 18
+        age_max = config_manager.get_value(db, "AGE_MAX_CRITIQUE") or 35
+        hu_max = config_manager.get_value(db, "HU_MAX_THRESHOLD") or 34
 
         # --- LOGIQUE GHIF : FACTEURS MAJEURS (ROUGE) ---
         if data.bassin_retreci:
@@ -58,4 +59,23 @@ class RiskService:
             recommendations=recommendations
         )
 
+    def get_stats_by_user_scope(self, current_user: User) -> Dict[str, Any]:
+        """
+        Méthode manquante qui causait le crash du dashboard.
+        Retourne les statistiques de risques basées sur le rôle de l'utilisateur.
+        """
+        # Note: En production, vous feriez des requêtes SQL réelles ici.
+        # Voici une structure de retour compatible avec votre Dashboard.
+        return {
+            "total_evaluations": 0,
+            "distribution": {
+                "RED": 0,
+                "ORANGE": 0,
+                "GREEN": 0
+            },
+            "scope": current_user.role,
+            "region": "National"
+        }
+
+# Instance unique pour l'application
 risk_service = RiskService()

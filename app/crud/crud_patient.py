@@ -13,7 +13,6 @@ class CRUDPatient:
         return db.query(Patient).filter(Patient.uuid == uuid).first()
 
     def get_by_qr_hash(self, db: Session, qr_hash: str) -> Optional[Patient]:
-        # Note: Vérifiez si le champ dans votre modèle est csu_qr_hash ou qr_code_hash
         return db.query(Patient).filter(Patient.csu_qr_hash == qr_hash).first()
 
     def get_multi(self, db: Session, *, skip: int = 0, limit: int = 100) -> List[Patient]:
@@ -37,7 +36,6 @@ class CRUDPatient:
     # --- ACTIONS ---
 
     def create_with_owner(self, db: Session, *, obj_in: PatientCreate, creator_id: int) -> Patient:
-        # Conversion du schéma en dictionnaire (Pydantic v2)
         obj_in_data = obj_in.model_dump()
         db_obj = Patient(
             **obj_in_data,
@@ -66,5 +64,4 @@ class CRUDPatient:
         db.refresh(db_obj)
         return db_obj
 
-# L'instance exportée doit s'appeler 'patient' pour correspondre à vos imports
 patient = CRUDPatient()
